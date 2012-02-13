@@ -1,0 +1,66 @@
+/*
+ * License goes here
+ * version : VERSION
+ */
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD.
+        define(['jquery'], factory);
+    } else {
+        // Browser globals
+        root.LIBNAME = factory(root.jQuery);
+    }
+}(this, function (jQuery) {
+
+    var lib = {},
+        libStore = {};
+
+    function normalize(id) {
+        return id.replace(/^\.\//, '');
+    }
+
+    function req(id) {
+        //Handle external dependencies first.
+        if (id === 'jquery') {
+            return jQuery;
+        }
+
+        id = normalize(id);
+
+        //If stored as a stringified value, bring it back to life.
+        var stored = libStore[id];
+        if (stored) {
+            delete libStore[id];
+            eval(stored);
+        }
+
+        return lib[id];
+    }
+
+    //Stringified module. Store for later.
+    function defStore(id, path, value) {
+        value = "def('" + id + "', " + value + ");";
+
+        //IE with conditional comments on cannot handle the
+        //sourceURL trick, so skip it if enabled.
+        /*@if (@_jscript) @else @*/
+        value += "\r\n//@ sourceURL=" + path;
+        /*@end@*/
+
+        libStore[id] = value;
+    }
+
+    function def(id, func) {
+        id = normalize(id);
+
+        var exports = lib[id] = {},
+            module = {
+                id: id
+            };
+
+        func(req, exports, module);
+
+        if (module.exports) {
+            lib[id] = module.exports;
+        }
+    }
