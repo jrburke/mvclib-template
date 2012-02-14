@@ -30,6 +30,6 @@ with the `foo` name).
 
 ## TODO
 
-* volofile
 * better test.html file
 * discuss why return would be better instead of module.exports.
+* only write path after lib/ for the defStore calls.

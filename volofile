@@ -1,0 +1,20 @@
+define(function (require) {
+    'use strict';
+
+    return {
+        //Run as the result of first setting up this project via a
+        //"volo create" call.
+        onCreate: function (d, v, namedArgs, projectName) {
+            //Replace instances of LIBNAME with projectName
+            v.getFilteredFileList('.', /\.js$|\.html$|wrap.start/)
+                .forEach(function (name) {
+                    var contents = v.read(name)
+                                    .replace(/LIBNAME/g, projectName);
+                    v.write(name, contents);
+                });
+
+            //Remove this file once done.
+            v.rm('./volofile');
+        }
+    };
+});
