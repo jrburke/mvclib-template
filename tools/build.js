@@ -41,7 +41,7 @@
 
             //Now trigger
             requirejs.optimize({
-                baseUrl:rootPath + "/lib",
+                baseUrl:rootPath,
                 paths: {
                     //Do not look for a jQuery file to include in the output,
                     //it is an external dependency.
@@ -62,10 +62,11 @@
                            '\n})';
                 },
                 onBuildWrite: function (id, path, contents) {
-                    //Convert the define wrapper, since the built file will have
-                    //its own type of define, called def. The contents will will have
-                    //a define('id', [], function (require, exports, module) {} structure,
-                    //convert that to be:
+                    //Convert the define wrapper, since the built file will
+                    //have its own type of define, called def. The contents
+                    //will will have a
+                    //define('id', [], function (require, exports, module) {}
+                    //structure. For the stringify option, convert that to be:
                     //defStore('id', path, stringifiedcontentof)
                     contents =  contents.replace(defineRegExp, '')
                                 //Remove the trailing }) for the define call
@@ -75,9 +76,9 @@
                     //Minify the contents
                     contents = optimizeLib.js(path, contents);
 
-                    //Only include the URL parts that are after lib, instead
-                    //of the complete string.
-                    path = path.substring(path.lastIndexOf('/lib/') + 1);
+                    //Only include the URL parts of path that are inside
+                    //this project.
+                    path = path.replace(rootPath + '/', '');
 
                     if (stringify) {
                         //Further reduce the contents to not include the
