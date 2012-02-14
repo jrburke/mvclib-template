@@ -42,7 +42,9 @@
     //>>STRINGIFY
     //Stringified module. Store for later.
     function defStore(id, path, value) {
-        value = "def('" + id + "', " + value + ");";
+        value = "def('" + id + "', function(require, exports, module){\n" +
+                value +
+                "\n});";
 
         //IE with conditional comments on cannot handle the
         //sourceURL trick, so skip it if enabled.

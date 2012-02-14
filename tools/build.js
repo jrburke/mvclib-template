@@ -8,6 +8,7 @@
         path = require('path'),
         rootPath = path.resolve(__dirname, '..'),
         defineRegExp = /define\s*\(\s*["'][^'"]+["']\s*,\s*\[[^\]]*\]\s*,/,
+        functionRegExp = /\s*function\s*\([^\(]+\)\s*\{\s*/,
         stringifyStart = '//>>STRINGIFY',
         stringifyEnd = '//<<STRINGIFY',
         stringify = process.argv[2] === 'stringify';
@@ -55,27 +56,38 @@
                     start: wrapStart,
                     end: wrapEnd
                 },
-                onBuildRead: function (id, url, contents) {
+                onBuildRead: function (id, path, contents) {
                     return 'define(function (require, exports, module) {\n' +
                            contents +
                            '\n})';
                 },
-                onBuildWrite: function (id, url, contents) {
+                onBuildWrite: function (id, path, contents) {
                     //Convert the define wrapper, since the built file will have
                     //its own type of define, called def. The contents will will have
                     //a define('id', [], function (require, exports, module) {} structure,
                     //convert that to be:
-                    //def('id', stringifiedcontentof->function(require, exports, module) {})
+                    //defStore('id', path, stringifiedcontentof)
                     contents =  contents.replace(defineRegExp, '')
-                                //Remove the trailing ) for the define call and any semicolon
+                                //Remove the trailing }) for the define call
+                                //and any semicolon
                                 .replace(/\)(;)?\s*$/, '');
 
                     //Minify the contents
-                    contents = optimizeLib.js(url, contents);
+                    contents = optimizeLib.js(path, contents);
+
+                    //Only include the URL parts that are after lib, instead
+                    //of the complete string.
+                    path = path.substring(path.lastIndexOf('/lib/') + 1);
 
                     if (stringify) {
+                        //Further reduce the contents to not include the
+                        //function wrapper, it will be addd by defStore
+                        contents =  contents.replace(functionRegExp, '')
+                            //Remove the trailing } for the function.
+                            .replace(/\}\s*$/, '');
+
                         contents = makeJsString(contents);
-                        return "defStore('" + id + "', '" + url + "', " +
+                        return "defStore('" + id + "', '" + path + "', " +
                             "'" + contents + "'" +
                             ");";
                     } else {
