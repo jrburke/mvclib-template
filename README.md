@@ -26,3 +26,10 @@ when called, do:
 
 This will generate the foo.js file in this directory (if the project was created
 with the `foo` name).
+
+
+## TODO
+
+* volofile
+* better test.html file
+* discuss why return would be better instead of module.exports.

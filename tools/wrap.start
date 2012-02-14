@@ -12,8 +12,8 @@
     }
 }(this, function (jQuery) {
 
-    var lib = {},
-        libStore = {};
+    var libStore = {},
+        lib = {};
 
     function normalize(id) {
         return id.replace(/^\.\//, '');
@@ -27,16 +27,19 @@
 
         id = normalize(id);
 
+        //>>STRINGIFY
         //If stored as a stringified value, bring it back to life.
         var stored = libStore[id];
         if (stored) {
             delete libStore[id];
             eval(stored);
         }
+        //<<STRINGIFY
 
         return lib[id];
     }
 
+    //>>STRINGIFY
     //Stringified module. Store for later.
     function defStore(id, path, value) {
         value = "def('" + id + "', " + value + ");";
@@ -49,6 +52,7 @@
 
         libStore[id] = value;
     }
+    //<<STRINGIFY
 
     function def(id, func) {
         id = normalize(id);
