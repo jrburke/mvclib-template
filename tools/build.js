@@ -41,8 +41,13 @@
             //Now trigger
             requirejs.optimize({
                 baseUrl:rootPath + "/lib",
+                paths: {
+                    //Do not look for a jQuery file to include in the output,
+                    //it is an external dependency.
+                    'jquery': 'empty:'
+                },
                 name: "main",
-                out: rootPath + "/LIBNAME.js",
+                out: rootPath + "/dist/LIBNAME.js",
                 //Comment out the next line if you want minified code
                 optimize: 'none',
                 logLevel: 0,
