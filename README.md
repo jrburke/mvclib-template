@@ -1,7 +1,7 @@
 # mvclib-template
 
 This is an MVC library project template that assumes the use of jQuery to do
-DOM work. It came about from these influences
+DOM work. It came about from the following:
 
 * [I prefer developing close to the metal](http://tagneto.blogspot.com/2012/01/web-dev-with-two-turntables-and.html),
 but I appreciate some people like to use sugar and the dependencies it introduces.
@@ -9,16 +9,24 @@ but I appreciate some people like to use sugar and the dependencies it introduce
   [JS Jabber #3](http://javascriptjabber.com/003-jsj-build-tools/)
   about JS module formats and building.
 
-Specifically, I wanted to show how to construct a modular MVC library that:
+Specifically, I wanted to show how to construct a modular MVC library with the
+following properties:
 
-* works out of the box in Node
-* each mvc component is a separate JS file
-* Uses a "sugared" module syntax as used in Node
+* each mvc component is a separate JS file.
+* Uses a "sugared" module syntax as used in Node.
+* works out of the box in Node.
 * but it can be used in AMD projects easily, particularly via
 [volo](https://github.com/volojs/volo), which will
 wrap the Node-like modules in define() wrappers.
+* Uses JS to build a single file for use in "browser globals" projects.
 
-First, some details about the project layout, then some benefits of this layout.
+While this project is framed in the context of "MVC", it can be used for any
+library that is made up of components that could be used in their own. While
+this template uses jQuery it is just to show how an external dependency could
+be used in conjunction with local modular code.
+
+Here are some details about the project layout, then some benefits of this
+layout.
 
 ## Details
 
@@ -49,13 +57,13 @@ This will create a `foo` directory and for an MVC library named `foo`.
 
 * **main.js**: the top-level JS file that pulls together the subcomponents into
 one object. Its exported value is the one used for the built, "just deliver one
-JS file that works with browser globals" output. This main.js is also used
-as the "main" property in the package.json that is used by npm and web project
+JS file that works with browser globals" output. This main.js is used
+as the "main" property in the package.json that is used by Node and web project
 tools like volo.
 * **Other JS files**: implement the subcomponents of the library. They are
 stored as sibling to main.js so that they can easily be used separately by Node
 and AMD projects.
-* **tools**: directory containing the build script that runs in Node to generate
+* **tools**: directory containing the Node-based build script that generates
 the one JS file that can be delivered for "browser globals" projects.
     * **wrap.start** and **wrap.end** implement the immediately executed
     function that sets up the built file to be usable either in an AMD or
@@ -74,12 +82,13 @@ when called, do:
 
     node tools/build.js stringify
 
-This will generate the dist/foo.js file (if the project was created
-with the `foo` name).
+This will generate a `dist/foo.js file` (if the project was created with the
+`foo` name).
 
 The `stringify` option includes
 [@sourceURL](http://blog.getfirebug.com/2009/08/11/give-your-eval-a-name-with-sourceurl/)
-support, so you can debug individual components in browsers that support @sourceURL.
+support, so you can debug individual components in browsers that support
+@sourceURL.
 
 ## Benefits
 
@@ -94,7 +103,7 @@ register with an AMD loader if it is available. It is also set up to be
 used in Node in source form. So the project could be published to npm.
 
 Here are some more benefits, specifically to address some concerns that
-@wycats brought up in the above-mentioned podcast, and to see how it could also
+@wycats brought up in the above-mentioned podcast, and how it could also
 relate to other MVC-type libraries, like Backbone.
 
 ### Fine-grained use
@@ -132,7 +141,7 @@ as compared to:
 
 The [tools/wrap.start](https://github.com/jrburke/mvclib-template/blob/master/tools/wrap.start)
 file shows the implementation used for require and module.exports. They are
-quite small. That header is even smaller if the "eval strings" build approach
+quite small. That file is even smaller if the "eval strings" build approach
 is not used (so the STRINGIFY sections would be removed from wrap.start).
 
 The main.js file gives a nice way to list out how the entire structure of
@@ -169,10 +178,9 @@ constructed so that it could be easily integrated into AMD projects.
 
 In particular, if you use
 [volo add](https://github.com/volojs/volo/blob/latest/vololib/add/doc.md),
-you could fetch this project for an AMD app, and volo will add the dependency
-and convert the JS files to have the define() wrappers. It will do so without
-introducing any new configuration in your app -- it just uses the normal AMD
-path conventions.
+you could fetch this project for an AMD app, and volo will convert the JS files
+to use the define() wrappers. It will do so without introducing any new c
+onfiguration in your app -- it just uses the normal AMD path conventions.
 
 ## Summary
 
@@ -181,13 +189,13 @@ builds and eval tricks to develop. I would rely on build tools
 to replace define() usage with smaller shims for internal structure, but still
 use standard AMD APIs to target these shim replacements.
 
-For people that like sugar and doing builds during development, hopefully this
-sample project shows an standard approach that could be used.
+However, for people that want sugar and builds during development,
+this sample project demonstrates a nice modular approach.
 
 Plus, as hopefully demonstrated, Node works great as a build tool. Yehuda is
 correct that the default Node APIs that encourage async work can be awkward,
-but I think those are solvable by higher APIs as provided in tools like volo
-or grunt. Plus, I believe using JavaScript for these tools will be more
-acceptable to the entire spectrum of JS developers. It needs some work to build
-up, but it is achievable.
-
+but I think those are solvable by higher APIs as provided in tools like
+[volo](https://github.com/volojs/volo) or
+[grunt](https://github.com/cowboy/grunt). Plus, I believe using JavaScript for
+these tools will be more acceptable to a wider spectrum of JS developers. It
+needs some work to build up, but it is achievable.
